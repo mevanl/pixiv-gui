@@ -4,12 +4,18 @@ def app(page: ft.Page) -> None:
 
     # Page data
     page.title = "Pixiv GUI"
+    page.theme_mode = ft.ThemeMode.LIGHT
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.window_width = 700
     page.window_height = 700
     page.window_resizable = False
 
     # widgets
+    selection: ft.Dropdown = ft.Dropdown(
+        width=100,
+        options=[
+            ft.dropdown.Option("Artwork"),
+            ft.dropdown.Option("Novel"),])
     id_field: ft.TextField = ft.TextField(label='id', 
                                           text_align=ft.TextAlign.LEFT,
                                           width=400)
@@ -26,10 +32,29 @@ def app(page: ft.Page) -> None:
             download_button.disabled = True
 
         page.update()
-
     
+
     def download(event: ft.ControlEvent) -> None:
-        print(f"Printing...\nid: {id_field.value}")
+        if selection.value == "Novel":
+            selection.value = "Novel"
+            page.update()
+            download_novel(event=event)
+        else:
+            selection.value = "Artwork"
+            page.update()
+            download_artwork(event=event)
+    
+    
+    def download_artwork(event: ft.ControlEvent) -> None:
+        print(f"Printing artwork...\nid: {id_field.value}")
+
+        id_field.value = ""
+        download_button.disabled = True
+        page.update()
+    
+
+    def download_novel(event: ft.ControlEvent) -> None:
+        print(f"Print novel...\nid: {id_field.value}")
 
         id_field.value = ""
         download_button.disabled = True
@@ -43,7 +68,7 @@ def app(page: ft.Page) -> None:
     page.add(
         ft.Row(
             controls=[
-                id_field, download_button
+                selection, id_field, download_button
             ],
             alignment=ft.MainAxisAlignment.CENTER
         )
